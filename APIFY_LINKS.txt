@@ -1,0 +1,35 @@
+=====================================================================
+                    APIFY LINKS - APEX DATA SOLUTIONS
+=====================================================================
+
+Täältä löydät kaikki tärkeät linkit Apify-tilillesi, tuloihisi ja julkaistuihin ohjelmiisi.
+
+1. TULOT JA TILASTOT (SEURAA RAHOJA TÄÄLTÄ):
+---------------------------------------------------------------------
+* Kehittäjätulot & Analytics (Paljonko olet tienannut):
+  https://console.apify.com/actors/insights
+  (Täältä näet "Analytics" ja "Payouts" välilehdet)
+
+* Oma yleinen kulutuksesi (Ilmaisraja 5.00$):
+  https://console.apify.com/billing
+
+
+2. JULKAISTUT OHJELMASI (APIFY STORESSA):
+---------------------------------------------------------------------
+* Pexels Video & Image Bulk Scraper:
+  https://apify.com/knobby_wallpaper/pexels-scraper
+
+* Video Download Link Crawler:
+  https://apify.com/knobby_wallpaper/video-download-link-crawler
+
+
+3. ALUSTAN HALLINTA (APIFY CONSOLE):
+---------------------------------------------------------------------
+* Pexels Scraper (Hallinta & Päivitykset):
+  https://console.apify.com/actors/WJsS4tJLdRegUO9G3
+
+* Video Download Link Crawler (Hallinta & Päivitykset):
+  https://console.apify.com/actors/ickd9ZHXd1sR2VQz1
+
+* Apify Dashboard (Yleisnäkymä):
+  https://console.apify.com/
