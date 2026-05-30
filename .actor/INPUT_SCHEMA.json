@@ -1,0 +1,38 @@
+{
+    "title": "Video Download Link Crawler Input Schema",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "URLs to start the crawl from.",
+            "editor": "requestListSources",
+            "prefill": [
+                { "url": "https://mixkit.co/free-stock-video/" }
+            ]
+        },
+        "linkRegex": {
+            "title": "Link Regex",
+            "type": "string",
+            "description": "Regular expression to filter which links to follow. Only links matching this regex will be crawled. (Default: follow all internal links)",
+            "default": ".*",
+            "prefill": ".*"
+        },
+        "maxRequests": {
+            "title": "Max Requests",
+            "type": "integer",
+            "description": "Maximum number of pages the crawler will request to prevent long/expensive runs.",
+            "default": 50,
+            "minimum": 1
+        },
+        "maxDepth": {
+            "title": "Max Crawl Depth",
+            "type": "integer",
+            "description": "Maximum link depth to follow from the start URLs.",
+            "default": 2,
+            "minimum": 1
+        }
+    },
+    "required": ["startUrls"]
+}
