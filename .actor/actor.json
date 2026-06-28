@@ -1,8 +1,8 @@
 {
     "actorSpecification": 1,
     "name": "video-download-link-crawler",
-    "title": "Video Download Link Crawler",
-    "description": "Crawls websites starting from seed URLs, checks links matching a regex, and extracts downloadable video links.",
-    "version": "0.1",
+    "title": "Universal File & Video Download Link Extractor",
+    "description": "Crawls any website to discover and extract downloadable media and file links matching custom extensions (e.g. .mp4, .pdf, .mp3, .zip).",
+    "version": "0.2",
     "dockerfile": "./.actor/Dockerfile"
 }
