@@ -9,13 +9,16 @@
             "description": "URLs to start the crawl from.",
             "editor": "requestListSources",
             "prefill": [
-                { "url": "https://mixkit.co/free-stock-video/" }
+                {
+                    "url": "https://mixkit.co/free-stock-video/"
+                }
             ]
         },
         "linkRegex": {
             "title": "Link Regex",
             "type": "string",
             "description": "Regular expression to filter which links to follow. Only links matching this regex will be crawled. (Default: follow all internal links)",
+            "editor": "textfield",
             "default": ".*",
             "prefill": ".*"
         },
@@ -38,8 +41,18 @@
             "type": "array",
             "description": "List of file extensions to search and extract (e.g. .mp4, .pdf, .mp3, .zip). Leave default for video extraction.",
             "editor": "stringList",
-            "default": [".mp4", ".webm", ".mkv", ".m3u8", ".avi", ".mov", ".flv"]
+            "default": [
+                ".mp4",
+                ".webm",
+                ".mkv",
+                ".m3u8",
+                ".avi",
+                ".mov",
+                ".flv"
+            ]
         }
     },
-    "required": ["startUrls"]
+    "required": [
+        "startUrls"
+    ]
 }
