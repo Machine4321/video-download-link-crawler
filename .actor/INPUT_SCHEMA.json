@@ -32,6 +32,13 @@
             "description": "Maximum link depth to follow from the start URLs.",
             "default": 2,
             "minimum": 1
+        },
+        "allowedExtensions": {
+            "title": "Allowed File Extensions (Optional)",
+            "type": "array",
+            "description": "List of file extensions to search and extract (e.g. .mp4, .pdf, .mp3, .zip). Leave default for video extraction.",
+            "editor": "stringList",
+            "default": [".mp4", ".webm", ".mkv", ".m3u8", ".avi", ".mov", ".flv"]
         }
     },
     "required": ["startUrls"]

@@ -3,7 +3,6 @@ import re
 from urllib.parse import urljoin, urlparse
 
 from apify import Actor
-from crawlee import EnqueueStrategy
 from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
 
 async def main() -> None:
@@ -16,6 +15,7 @@ async def main() -> None:
         link_regex = actor_input.get('linkRegex', '.*')
         max_requests = actor_input.get('maxRequests', 50)
         max_depth = actor_input.get('maxDepth', 2)
+        allowed_extensions = actor_input.get('allowedExtensions', ['.mp4', '.webm', '.mkv', '.m3u8', '.avi', '.mov', '.flv'])
 
         # Extract URLs from input format
         start_urls = []
@@ -31,8 +31,21 @@ async def main() -> None:
             Actor.log.error('No start URLs provided in the input.')
             return
 
+        # Normalize allowed extensions to lowercase and ensure they start with a dot
+        normalized_extensions = []
+        for ext in allowed_extensions:
+            ext_str = str(ext).strip().lower()
+            if ext_str:
+                if not ext_str.startswith('.'):
+                    ext_str = '.' + ext_str
+                normalized_extensions.append(ext_str)
+
+        if not normalized_extensions:
+            normalized_extensions = ['.mp4', '.webm', '.mkv', '.m3u8', '.avi', '.mov', '.flv']
+
         Actor.log.info(f'Starting crawl with {len(start_urls)} URLs.')
         Actor.log.info(f'Regex filter: {link_regex}')
+        Actor.log.info(f'Target file extensions: {normalized_extensions}')
         Actor.log.info(f'Limits - Max requests: {max_requests}, Max depth: {max_depth}')
 
         # Compile link regex
@@ -41,9 +54,6 @@ async def main() -> None:
         except re.error as e:
             Actor.log.error(f'Invalid regular expression for linkRegex: {e}')
             return
-
-        # Define video extensions to look for in href links
-        video_extensions = ('.mp4', '.webm', '.mkv', '.m3u8', '.avi', '.mov', '.flv')
 
         # Initialize BeautifulSoupCrawler with input constraints
         crawler = BeautifulSoupCrawler(
@@ -55,7 +65,7 @@ async def main() -> None:
         async def request_handler(context: BeautifulSoupCrawlingContext) -> None:
             Actor.log.info(f'Processing {context.request.url} ...')
             
-            found_videos = set()
+            found_links = set()
 
             def resolve_url(url_str: str) -> tuple[str, str]:
                 abs_url = urljoin(context.request.url, url_str)
@@ -63,44 +73,40 @@ async def main() -> None:
                 path = parsed.path.lower()
                 return abs_url, path
 
-            # 1. Check video tags for src
-            for video in context.soup.find_all('video'):
-                src = video.get('src')
-                if src:
-                    abs_url, _ = resolve_url(src)
-                    found_videos.add(abs_url)
+            # Extract URLs from video, audio, source, img and anchor tags matching extensions
+            tags_to_check = {
+                'video': 'src',
+                'audio': 'src',
+                'source': 'src',
+                'img': 'src',
+                'a': 'href'
+            }
 
-            # 2. Check source tags (often nested in video tags)
-            for source in context.soup.find_all('source'):
-                src = source.get('src')
-                if src:
-                    abs_url, _ = resolve_url(src)
-                    found_videos.add(abs_url)
+            for tag_name, attr_name in tags_to_check.items():
+                for element in context.soup.find_all(tag_name):
+                    val = element.get(attr_name)
+                    if val:
+                        abs_url, path = resolve_url(val)
+                        if any(path.endswith(ext) for ext in normalized_extensions):
+                            found_links.add(abs_url)
 
-            # 3. Check a (anchor) tags ending in video extensions
-            for a in context.soup.find_all('a'):
-                href = a.get('href')
-                if href:
-                    abs_url, path = resolve_url(href)
-                    if any(path.endswith(ext) for ext in video_extensions):
-                        found_videos.add(abs_url)
-
-            # If video links are found, push them to the dataset
-            if found_videos:
+            # If links are found, push them to the dataset
+            if found_links:
                 page_title = context.soup.title.string.strip() if context.soup.title else ""
-                Actor.log.info(f'Found {len(found_videos)} video link(s) on {context.request.url}')
+                Actor.log.info(f'Found {len(found_links)} matching link(s) on {context.request.url}')
                 await Actor.push_data({
                     "page_url": context.request.url,
                     "page_title": page_title,
-                    "found_video_links": list(found_videos)
+                    "found_links": list(found_links),
+                    "found_video_links": list(found_links)  # Backward compatibility
                 })
             else:
-                Actor.log.info(f'No video links found on {context.request.url}')
+                Actor.log.info(f'No matching links found on {context.request.url}')
 
             # Enqueue follow-up links matching the regex filter and domain restriction
             await context.enqueue_links(
                 include=[link_pattern],
-                strategy=EnqueueStrategy.SAME_HOSTNAME
+                strategy='same-hostname'
             )
 
         # Run the crawler
